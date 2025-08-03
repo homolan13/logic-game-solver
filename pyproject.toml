@@ -1,0 +1,22 @@
+[project]
+name = "logic-game-solver"
+version = "0.1.0"
+description = "Engine (including OCT) for solving logic games like Sudoku and Binoxxo."
+readme = "README.md"
+authors = [
+    { name = "Yanis Schärer", email = "logic_game_solver@schaerer.slmail.me" },
+]
+license = { text = "GPL-3.0-or-later" }
+requires-python = ">=3.12, <3.13"
+dependencies = [
+    "fastapi >=0.116, <1.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest >=7.4, <8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
