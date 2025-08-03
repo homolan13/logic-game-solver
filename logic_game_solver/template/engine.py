@@ -8,12 +8,15 @@ class BaseGameEngine(ABC):
     """
     Base class for game engines in a logic game solver.
     """
-    def __init__(self, game_state: GameState):
+    def __init__(self, game_state: GameState, solver: str):
         """
         Initialize the game engine with a game state.
         
         :param game: An instance of GameState containing the initial game data.
+        :param solver: The name of the solver.
         """
+        self.solver = solver
+
         for name, field in game_state.data.items():
             if isinstance(field.value, list):
                 game_state.data[name].source = 'initial'  # Set the source of initial field states to 'initial'
@@ -86,15 +89,4 @@ class BaseGameEngine(ABC):
         :param field: An instance of FieldState representing the field to enforce rules on.
         :return: The updated field state after enforcing the rules.
         """
-        raise NotImplementedError('This method should be implemented by subclasses.') 
-
-    @property
-    @abstractmethod
-    def solver(self) -> str:
-        """
-        The name of the solver.
-        This property should be implemented by subclasses.
-
-        :return: The name of the solver as a string.
-        """
-        raise NotImplementedError('This property should be implemented by subclasses.')         
+        raise NotImplementedError('This method should be implemented by subclasses.')       
