@@ -1,26 +1,26 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
 
-from logic_game_solver.template.state import GameState, FieldState
-from logic_game_solver.template.exceptions import NoSolution, AmbiguousSolutions
+from logic_game_solver._template.state import GameState, FieldState
+from logic_game_solver._template.exceptions import NoSolution, AmbiguousSolutions
 
 class BaseGameEngine(ABC):
     """
     Base class for game engines in a logic game solver.
     """
-    def __init__(self, game_state: GameState, solver: str):
+    def __init__(self, game_state: GameState):
         """
         Initialize the game engine with a game state.
         
         :param game: An instance of GameState containing the initial game data.
-        :param solver: The name of the solver.
         """
-        self.solver = solver
-
         for name, field in game_state.data.items():
             if isinstance(field.value, list):
                 game_state.data[name].source = 'initial'  # Set the source of initial field states to 'initial'
 
+        if not self.verify_game_state():
+            raise ValueError('Game state is not consistent.')
+        
         self.initial_game_state = deepcopy(game_state)  # Store the initial game state
         self.game_state = game_state
         self.step_count = 0  # Counter for the number of steps taken
@@ -52,6 +52,9 @@ class BaseGameEngine(ABC):
 
         self.step_count += 1
 
+        if self.verify_game_state():
+            raise ValueError('Game state is not consistent after enforcing rules.')
+
     def solve(self):
         """
         Solve the game using the game engine.
@@ -78,6 +81,16 @@ class BaseGameEngine(ABC):
         :return: True if the game is solved, False otherwise.
         """
         return not any(isinstance(field.value, list) for field in self.game_state.data.values())
+    
+    @property
+    @abstractmethod
+    def solver(self) -> str:
+        """
+        Return the name of the solver for this game engine.
+        
+        :return: The name of the solver.
+        """
+        raise NotImplementedError('This property should be implemented by subclasses.')
 
     @abstractmethod
     def enforce(self, name: str, field: FieldState) -> FieldState:
@@ -89,4 +102,13 @@ class BaseGameEngine(ABC):
         :param field: An instance of FieldState representing the field to enforce rules on.
         :return: The updated field state after enforcing the rules.
         """
-        raise NotImplementedError('This method should be implemented by subclasses.')       
+        raise NotImplementedError('This method should be implemented by subclasses.')
+
+    @abstractmethod
+    def verify_game_state(self) -> bool:
+        """
+        Verify the current game state for consistency.
+
+        :return: True if the game state is consistent, False otherwise.
+        """
+        raise NotImplementedError('This method should be implemented by subclasses.')
